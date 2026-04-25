@@ -60,7 +60,7 @@ Generate leads from **any location worldwide** - San Francisco to Tokyo, London 
 
 ## 🌐 Live Demo
 
-**🚀 [Deployed on Vercel](https://sharpe-leads.vercel.app/)**
+**🚀 [Deployed on Vercel](https://sharpe-leads-prod.vercel.app/)**
 
 ## 📋 Prerequisites
 
@@ -272,7 +272,7 @@ This project is open source and available under the MIT License.
 
 ## 🔗 Links
 
-- **Live Demo**: [https://sharpe-leads.vercel.app](https://sharpe-leads.vercel.app)
+- **Live Demo**: [https://sharpe-leads-prod.vercel.app](https://sharpe-leads-prod.vercel.app)
 - **GitHub Repository**: [https://github.com/jonathonsmith/SHARPE-LEADS](https://github.com/jonathonsmith/SHARPE-LEADS)
 - **Issues**: [https://github.com/jonathonsmith/SHARPE-LEADS/issues](https://github.com/jonathonsmith/SHARPE-LEADS/issues)
 
