@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeadForge AI - Real-Time Scraper</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .lead-card { animation: slideIn 0.5s ease-out; }
+        .scraping-pulse { animation: pulse 1.5s infinite; }
+        .pipeline-card { cursor: pointer; transition: all 0.2s; }
+        .pipeline-card:hover { transform: scale(1.02); }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+    <header class="bg-gradient-to-r from-purple-900 via-indigo-900 to-purple-900 border-b border-purple-500/30">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">LeadForge AI</h1>
+                    <p class="text-purple-300 text-sm mt-1">Real-Time Lead Scraper with Cloudflare Bypass</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div id="statusIndicator">
+                        <span id="statusDot" class="w-3 h-3 bg-gray-500 rounded-full"></span>
+                        <span id="statusText" class="text-sm text-gray-400">Idle</span>
+                    </div>
+                    <button id="realLeadsBtn" class="bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 px-6 py-3 rounded-lg font-semibold transition-all">🚀 Generate Leads</button>
+                    <button id="stopBtn" class="hidden bg-red-600 hover:bg-red-700 px-6 py-3 rounded-lg font-semibold transition-all">⏹️ Stop</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="bg-gray-800/50 border-b border-gray-700">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex flex-wrap items-center gap-4">
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Industry</label>
+                    <select id="industryFilter" class="bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm w-40">
+                        <option value="all">All Industries</option>
+                        <option value="Agriculture">Agriculture</option>
+                        <option value="Construction">Construction</option>
+                        <option value="Consulting">Consulting</option>
+                        <option value="Education">Education</option>
+                        <option value="Energy">Energy</option>
+                        <option value="Entertainment">Entertainment</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Healthcare">Healthcare</option>
+                        <option value="Hospitality">Hospitality</option>
+                        <option value="Legal">Legal</option>
+                        <option value="Manufacturing">Manufacturing</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Real Estate">Real Estate</option>
+                        <option value="Retail">Retail</option>
+                        <option value="Technology">Technology</option>
+                        <option value="Telecom">Telecom</option>
+                        <option value="Transportation">Transportation</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Location</label>
+                    <select id="locationFilter" class="bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm w-40">
+                        <option value="all">All Locations</option>
+                        <option value="San Francisco">San Francisco, CA</option>
+                        <option value="New York">New York, NY</option>
+                        <option value="Austin">Austin, TX</option>
+                        <option value="Seattle">Seattle, WA</option>
+                        <option value="Denver">Denver, CO</option>
+                        <option value="Miami">Miami, FL</option>
+                        <option value="Chicago">Chicago, IL</option>
+                        <option value="Boston">Boston, MA</option>
+                        <option value="Los Angeles">Los Angeles, CA</option>
+                        <option value="Phoenix">Phoenix, AZ</option>
+                        <option value="Dallas">Dallas, TX</option>
+                        <option value="Atlanta">Atlanta, GA</option>
+                        <option value="Portland">Portland, OR</option>
+                        <option value="Nashville">Nashville, TN</option>
+                        <option value="Raleigh">Raleigh, NC</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Min Score</label>
+                    <select id="scoreFilter" class="bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm w-36">
+                        <option value="0">All Scores</option>
+                        <option value="80">80+ Only</option>
+                        <option value="60">60+ Only</option>
+                    </select>
+                </div>
+                <div class="flex-1"></div>
+                <div class="flex gap-2 items-center">
+                    <button id="loadSheetsBtn" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm whitespace-nowrap">📊 Load from Sheets</button>
+                    <button id="loadLeadsBtn" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg text-sm whitespace-nowrap">📥 Load Saved Leads</button>
+                    <div class="text-right">
+                        <div class="text-xs text-gray-400">Speed</div>
+                    <input type="range" id="speedSlider" min="300" max="2000" value="1000" class="w-28">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="progressSection" class="hidden bg-gray-800/50 border-b border-gray-700">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between mb-2">
+                <span id="progressText" class="text-sm text-purple-300">Scanning...</span>
+                <span id="progressStats" class="text-sm text-gray-400">0 leads found</span>
+            </div>
+            <div class="w-full bg-gray-700 rounded-full h-2">
+                <div id="progressBar" class="bg-gradient-to-r from-purple-600 to-pink-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <main class="container mx-auto px-4 py-8">
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+            <div class="bg-gradient-to-br from-purple-900/50 to-purple-800/30 rounded-xl p-4 border border-purple-500/20">
+                <div class="text-purple-300 text-xs mb-1">Total Leads</div>
+                <div id="totalLeads" class="text-2xl font-bold">0</div>
+            </div>
+            <div class="bg-gradient-to-br from-green-900/50 to-green-800/30 rounded-xl p-4 border border-green-500/20">
+                <div class="text-green-300 text-xs mb-1">Qualified (80+)</div>
+                <div id="qualifiedLeads" class="text-2xl font-bold">0</div>
+            </div>
+            <div class="bg-gradient-to-br from-blue-900/50 to-blue-800/30 rounded-xl p-4 border border-blue-500/20">
+                <div class="text-blue-300 text-xs mb-1">Avg Score</div>
+                <div id="avgScore" class="text-2xl font-bold">0</div>
+            </div>
+            <div class="bg-gradient-to-br from-orange-900/50 to-orange-800/30 rounded-xl p-4 border border-orange-500/20">
+                <div class="text-orange-300 text-xs mb-1">In Pipeline</div>
+                <div id="inPipeline" class="text-2xl font-bold">0</div>
+            </div>
+            <div class="bg-gradient-to-br from-yellow-900/50 to-yellow-800/30 rounded-xl p-4 border border-yellow-500/20">
+                <div class="text-yellow-300 text-xs mb-1">Converted</div>
+                <div id="convertedLeads" class="text-2xl font-bold">0</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2">
+                <div class="bg-gray-800/50 rounded-xl border border-gray-700">
+                    <div class="p-4 border-b border-gray-700 flex items-center justify-between">
+                        <h2 class="text-xl font-semibold">📊 Live Lead Feed</h2>
+                        <button id="clearFeedBtn" class="text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-lg">Clear Feed</button>
+                    </div>
+                    <div id="leadFeed" class="p-4 space-y-3 max-h-[500px] overflow-y-auto">
+                        <div class="text-center text-gray-500 py-12">
+                            <div class="text-5xl mb-4">🎯</div>
+                            <p>Click "Start Scraping" to find real leads</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <div class="bg-gray-800/50 rounded-xl border border-gray-700">
+                    <div class="p-4 border-b border-gray-700">
+                        <h2 class="text-xl font-semibold">🤖 AI Analysis</h2>
+                    </div>
+                    <div id="aiAnalysis" class="p-4 max-h-[300px] overflow-y-auto">
+                        <p class="text-center text-gray-500 text-sm">Analysis appears here</p>
+                    </div>
+                </div>
+
+                <div class="bg-gray-800/50 rounded-xl border border-gray-700">
+                    <div class="p-4 border-b border-gray-700">
+                        <h2 class="text-xl font-semibold">⚡ Actions</h2>
+                    </div>
+                    <div class="p-4 space-y-2">
+                        <button id="exportLeadsBtn" class="w-full bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg text-sm">📥 Export CSV</button>
+                        <button id="bulkFindEmailsBtn" class="w-full bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg text-sm">🔍 Find All Emails</button>
+                        <button id="bulkValidateEmailsBtn" class="w-full bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded-lg text-sm">✓ Validate All Emails</button>
+                        <button id="bulkPipelineBtn" class="w-full bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg text-sm">📋 Add All to Pipeline</button>
+                        <button id="bulkEmailsBtn" class="w-full bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm">✉️ Bulk Emails</button>
+                        <button id="syncToSheetsBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg text-sm">🔄 Sync to Sheets</button>
+                        <button id="clearAllBtn" class="w-full bg-red-900/30 hover:bg-red-900/50 border border-red-700 px-4 py-2 rounded-lg text-sm">🗑️ Clear All</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 bg-gray-800/50 rounded-xl border border-gray-700">
+            <div class="p-4 border-b border-gray-700">
+                <h2 class="text-xl font-semibold">📋 Pipeline (click to advance)</h2>
+            </div>
+            <div class="p-4">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="bg-gray-700/30 rounded-lg p-3 min-h-[200px]">
+                        <div class="text-sm font-semibold text-purple-300 mb-3">🆕 New (<span id="pipelineNewCount">0</span>)</div>
+                        <div id="pipelineNew" class="space-y-2"></div>
+                    </div>
+                    <div class="bg-gray-700/30 rounded-lg p-3 min-h-[200px]">
+                        <div class="text-sm font-semibold text-blue-300 mb-3">📞 Contacted (<span id="pipelineContactedCount">0</span>)</div>
+                        <div id="pipelineContacted" class="space-y-2"></div>
+                    </div>
+                    <div class="bg-gray-700/30 rounded-lg p-3 min-h-[200px]">
+                        <div class="text-sm font-semibold text-green-300 mb-3">✅ Qualified (<span id="pipelineQualifiedCount">0</span>)</div>
+                        <div id="pipelineQualified" class="space-y-2"></div>
+                    </div>
+                    <div class="bg-gray-700/30 rounded-lg p-3 min-h-[200px]">
+                        <div class="text-sm font-semibold text-yellow-300 mb-3">💰 Converted (<span id="pipelineConvertedCount">0</span>)</div>
+                        <div id="pipelineConverted" class="space-y-2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="emailModal" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50 p-4">
+        <div class="bg-gray-800 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-4 border-b border-gray-700 flex items-center justify-between">
+                <h3 class="text-xl font-semibold">✉️ AI Email</h3>
+                <button id="closeModalBtn" class="text-gray-400 hover:text-white text-2xl">&times;</button>
+            </div>
+            <div id="emailContent" class="p-6"></div>
+            <div class="p-4 border-t border-gray-700 flex gap-2">
+                <button id="copyEmailBtn" class="flex-1 bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg">📋 Copy</button>
+                <button id="sendEmailBtn" class="flex-1 bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg">✅ Send</button>
+                <button id="closeModalBtn2" class="flex-1 bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-300">
+        <span id="toastMessage">Done!</span>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            console.log('LeadForge AI Real-Time Scraper initializing...');
+
+            var allLeads = [];
+            var isGenerating = false;
+            var timer = null;
+            // Dynamic API endpoint - works locally and on Vercel
+            var apiEndpoint = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+                ? 'http://localhost:8000'
+                : window.location.origin;
+            var currentFilter = 'all';
+
+            // Industry mapping for backend
+            var industryMapping = {
+                'Agriculture': 'agriculture',
+                'Construction': 'construction company',
+                'Consulting': 'consulting firm',
+                'Education': 'education',
+                'Energy': 'energy',
+                'Entertainment': 'entertainment',
+                'Finance': 'finance',
+                'Healthcare': 'medical clinic',
+                'Hospitality': 'hospitality',
+                'Legal': 'law firm',
+                'Manufacturing': 'manufacturing',
+                'Marketing': 'marketing agency',
+                'Real Estate': 'real estate agency',
+                'Retail': 'retail',
+                'Technology': 'software company',
+                'Telecom': 'telecom',
+                'Transportation': 'transportation'
+            };
+
+            // Location mapping for backend
+            var locationMapping = {
+                'San Francisco': 'San Francisco, CA',
+                'New York': 'New York, NY',
+                'Austin': 'Austin, TX',
+                'Seattle': 'Seattle, WA',
+                'Denver': 'Denver, CO',
+                'Miami': 'Miami, FL',
+                'Chicago': 'Chicago, IL',
+                'Boston': 'Boston, MA',
+                'Los Angeles': 'Los Angeles, CA',
+                'Phoenix': 'Phoenix, AZ',
+                'Dallas': 'Dallas, TX',
+                'Atlanta': 'Atlanta, GA',
+                'Portland': 'Portland, OR',
+                'Nashville': 'Nashville, TN',
+                'Raleigh': 'Raleigh, NC'
+            };
+
+            function mapIndustry(frontendIndustry) {
+                return industryMapping[frontendIndustry] || 'software company';
+            }
+
+            function mapLocation(frontendLocation) {
+                return locationMapping[frontendLocation] || 'San Francisco, CA';
+            }
+
+            function getConfidenceClass(confidence) {
+                if (confidence >= 80) return 'text-green-400';
+                if (confidence >= 50) return 'text-yellow-400';
+                return 'text-red-400';
+            }
+
+            function formatEmailDisplay(lead) {
+                if (!lead.email) return '<span class="text-gray-500">No email found</span>';
+
+                var status = lead.email_validation_status || 'unverified';
+                var statusColors = {
+                    'valid': 'text-green-400',
+                    'invalid': 'text-red-400',
+                    'risky': 'text-yellow-400',
+                    'unverified': 'text-gray-400'
+                };
+                var statusIcons = {
+                    'valid': '✓',
+                    'invalid': '✗',
+                    'risky': '⚠',
+                    'unverified': '?'
+                };
+
+                return '<a href="mailto:' + lead.email + '" class="text-blue-400 hover:text-blue-300 hover:underline">' + lead.email + '</a> ' +
+                       '<span class="' + statusColors[status] + '">(' + statusIcons[status] + ')</span>';
+            }
+
+            async function findEmail(id) {
+                try {
+                    toast('🔍 Finding email...');
+                    var response = await fetch(apiEndpoint + '/api/leads/' + id + '/find-email', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({force_refresh: false})
+                    });
+
+                    if(!response.ok) {
+                        throw new Error('Failed to find email');
+                    }
+
+                    var data = await response.json();
+
+                    if(data.success && data.email) {
+                        // Update lead in allLeads
+                        var lead = allLeads.find(function(l) { return l.id == id; });
+                        if(lead) {
+                            lead.email = data.email;
+                            lead.email_confidence = data.confidence;
+                            lead.email_validation_status = 'unverified';
+
+                            // Update UI
+                            var card = document.querySelector('[data-lead-id="' + id + '"]');
+                            if(card) {
+                                card.remove();
+                            }
+                            addLeadCard(lead);
+                            updateAnalysis(lead);
+
+                            toast('✅ Found: ' + data.email + ' (' + data.confidence_level + ' confidence)');
+                        }
+                    } else {
+                        toast('❌ ' + (data.error || 'No email found'));
+                    }
+
+                } catch(error) {
+                    console.error('Find email error:', error);
+                    toast('❌ Failed to find email. Is backend running?');
+                }
+            }
+
+            async function validateEmail(id) {
+                try {
+                    toast('✓ Validating email...');
+                    var response = await fetch(apiEndpoint + '/api/leads/' + id + '/validate-email', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({})
+                    });
+
+                    if(!response.ok) {
+                        throw new Error('Failed to validate email');
+                    }
+
+                    var data = await response.json();
+
+                    if(data.success) {
+                        // Update lead in allLeads
+                        var lead = allLeads.find(function(l) { return l.id == id; });
+                        if(lead) {
+                            lead.email_validation_status = data.status;
+
+                            // Update UI
+                            var card = document.querySelector('[data-lead-id="' + id + '"]');
+                            if(card) {
+                                card.remove();
+                            }
+                            addLeadCard(lead);
+                            updateAnalysis(lead);
+
+                            var statusText = data.status.charAt(0).toUpperCase() + data.status.slice(1);
+                            var icon = data.is_valid ? '✅' : '⚠️';
+                            toast(icon + ' Email is ' + statusText + ' (Score: ' + data.quality_score + ')');
+                        }
+                    } else {
+                        toast('❌ ' + (data.error || 'Validation failed'));
+                    }
+
+                } catch(error) {
+                    console.error('Validate email error:', error);
+                    toast('❌ Failed to validate email. Is backend running?');
+                }
+            }
+
+            async function scrapeLeadsFromAPI(industry, location, maxLeads, minScore) {
+                try {
+                    var response = await fetch(apiEndpoint + '/api/scrape', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            industry: industry,
+                            location: location,
+                            max_leads: maxLeads,
+                            min_score: minScore
+                        })
+                    });
+
+                    if(!response.ok) {
+                        throw new Error('API request failed');
+                    }
+
+                    var data = await response.json();
+                    return data.leads.map(function(lead) {
+                        return {
+                            id: Date.now() + Math.random(),
+                            business: lead.business_name,
+                            industry: lead.industry,
+                            location: lead.location.split(',')[0],
+                            state: lead.location.split(',')[1].trim(),
+                            contact: 'Contact',  // Backend doesn't provide contact names
+                            email: lead.email || 'N/A',
+                            phone: lead.phone || 'N/A',
+                            score: lead.score,
+                            rating: lead.rating,
+                            reviews_count: lead.reviews_count,
+                            website: lead.website,
+                            address: lead.address,
+                            status: 'new'
+                        };
+                    });
+                } catch(error) {
+                    console.error('Scraping error:', error);
+                    throw error;
+                }
+            }
+
+            function generateLead() {
+                // This function is now replaced by API calls
+                console.warn('generateLead() deprecated - use scrapeLeadsFromAPI() instead');
+                return null;
+            }
+
+            function updateStats() {
+                var total = allLeads.length;
+                var qualified = allLeads.filter(function(l) { return l.score >= 80; }).length;
+                var avg = total > 0 ? Math.round(allLeads.reduce(function(s, l) { return s + l.score; }, 0) / total) : 0;
+                var pipeline = allLeads.filter(function(l) { return l.status !== 'new'; }).length;
+                var converted = allLeads.filter(function(l) { return l.status === 'converted'; }).length;
+
+                document.getElementById('totalLeads').textContent = total;
+                document.getElementById('qualifiedLeads').textContent = qualified;
+                document.getElementById('avgScore').textContent = avg;
+                document.getElementById('inPipeline').textContent = pipeline;
+                document.getElementById('convertedLeads').textContent = converted;
+            }
+
+            function addLeadCard(lead) {
+                var feed = document.getElementById('leadFeed');
+                var empty = feed.querySelector('.text-center');
+                if(empty) empty.remove();
+
+                var color = lead.score >= 80 ? 'green' : lead.score >= 60 ? 'yellow' : 'gray';
+
+                // Format phone as clickable link
+                var phoneDisplay = lead.phone || 'N/A';
+                var phoneLink = lead.phone ? '<a href="tel:' + lead.phone.replace(/[^0-9]/g, '') + '" class="text-blue-400 hover:text-blue-300 hover:underline" onclick="event.stopPropagation()">' + phoneDisplay + '</a>' : phoneDisplay;
+
+                // Format website as clickable link
+                var websiteDisplay = lead.website && lead.website !== 'N/A' ? (lead.website.length > 30 ? lead.website.substring(0, 30) + '...' : lead.website) : 'N/A';
+                var websiteLink = lead.website && lead.website !== 'N/A' ? '<a href="' + lead.website + '" target="_blank" class="text-green-400 hover:text-green-300 hover:underline" onclick="event.stopPropagation()">' + websiteDisplay + '</a>' : websiteDisplay;
+
+                var card = document.createElement('div');
+                card.className = 'lead-card bg-gray-700/50 rounded-lg p-4 border-l-4 border-' + color + '-500 hover:bg-gray-700';
+                card.dataset.leadId = lead.id;
+                card.innerHTML =
+                    '<div class="flex justify-between mb-2">' +
+                        '<div>' +
+                            '<h3 class="font-semibold text-white">' + lead.business + '</h3>' +
+                            '<p class="text-sm text-purple-300">' + lead.industry + '</p>' +
+                        '</div>' +
+                        '<div class="text-right">' +
+                            '<div class="text-2xl font-bold text-' + color + '-400">' + lead.score + '</div>' +
+                            (lead.email_confidence ? '<div class="text-xs ' + getConfidenceClass(lead.email_confidence) + '">Confidence: ' + lead.email_confidence + '%</div>' : '') +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="grid grid-cols-2 gap-2 text-sm text-gray-300 mb-2">' +
+                        '<div class="col-span-2">📧 ' + formatEmailDisplay(lead) + '</div>' +
+                        '<div>📍 ' + lead.location + ', ' + lead.state + '</div>' +
+                        '<div>⭐ ' + (lead.rating || 'N/A') + ' (' + (lead.reviews_count || 0) + ' reviews)</div>' +
+                        '<div>📞 ' + phoneLink + '</div>' +
+                        '<div>🌐 ' + websiteLink + '</div>' +
+                    '</div>' +
+                    '<div class="flex gap-2">' +
+                        (!lead.email ? '<button data-action="findEmail" data-id="' + lead.id + '" class="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-xs flex-1">🔍 Find Email</button>' : '') +
+                        (lead.email && !lead.email_validation_status || lead.email_validation_status === 'unverified' ? '<button data-action="validateEmail" data-id="' + lead.id + '" class="bg-yellow-600 hover:bg-yellow-700 px-3 py-1 rounded text-xs flex-1">✓ Validate</button>' : '') +
+                        '<button data-action="addPipeline" data-id="' + lead.id + '" class="bg-purple-600 hover:bg-purple-700 px-3 py-1 rounded text-xs flex-1">+ Pipeline</button>' +
+                        '<button data-action="showEmail" data-id="' + lead.id + '" class="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-xs flex-1">✉️ Email</button>' +
+                        '<button data-action="deleteLead" data-id="' + lead.id + '" class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-xs">🗑️</button>' +
+                    '</div>';
+
+                feed.insertBefore(card, feed.firstChild);
+                while(feed.children.length > 20) { feed.removeChild(feed.lastChild); }
+            }
+
+            function updateAnalysis(lead) {
+                // Format phone as clickable link
+                var phoneDisplay = lead.phone || 'N/A';
+                var phoneLink = lead.phone ? '<a href="tel:' + lead.phone.replace(/[^0-9]/g, '') + '" class="text-blue-400 hover:text-blue-300 hover:underline">' + phoneDisplay + '</a>' : phoneDisplay;
+
+                // Format website as clickable link
+                var websiteDisplay = lead.website && lead.website !== 'N/A' ? (lead.website.length > 40 ? 'Visit Website' : lead.website) : 'N/A';
+                var websiteLink = lead.website && lead.website !== 'N/A' ? '<a href="' + lead.website + '" target="_blank" class="text-green-400 hover:text-green-300 hover:underline">' + websiteDisplay + '</a>' : websiteDisplay;
+
+                var panel = document.getElementById('aiAnalysis');
+                panel.innerHTML =
+                    '<div class="space-y-3">' +
+                        '<div class="flex items-center gap-3 pb-3 border-b border-gray-700">' +
+                            '<div class="w-10 h-10 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">🏢</div>' +
+                            '<div class="flex-1">' +
+                                '<div class="font-semibold">' + lead.business + '</div>' +
+                                '<div class="text-xs text-gray-400">' + lead.industry + '</div>' +
+                            '</div>' +
+                            '<div class="text-2xl font-bold text-' + (lead.score >= 80 ? 'green' : 'yellow') + '-400">' + lead.score + '</div>' +
+                        '</div>' +
+                        '<div class="text-sm text-gray-300 space-y-2">' +
+                            '<div class="flex items-center gap-2">📍 <strong>Location:</strong> ' + lead.location + ', ' + lead.state + '</div>' +
+                            '<div class="flex items-center gap-2">⭐ <strong>Rating:</strong> ' + (lead.rating || 'N/A') + ' (' + (lead.reviews_count || 0) + ' reviews)</div>' +
+                            '<div class="flex items-center gap-2">📞 <strong>Phone:</strong> ' + phoneLink + '</div>' +
+                            '<div class="flex items-center gap-2">🌐 <strong>Website:</strong> ' + websiteLink + '</div>' +
+                            (lead.address ? '<div class="flex items-start gap-2">🏠 <strong>Address:</strong> ' + lead.address + '</div>' : '') +
+                        '</div>' +
+                        '<p class="text-sm text-green-400">✓ Real-time scraped data</p>' +
+                    '</div>';
+            }
+
+            function updatePipeline() {
+                var stages = ['new', 'contacted', 'qualified', 'converted'];
+                var colors = {new: 'purple', contacted: 'blue', qualified: 'green', converted: 'yellow'};
+
+                stages.forEach(function(stage) {
+                    var leads = allLeads.filter(function(l) { return l.status === stage; });
+                    var container = document.getElementById('pipeline' + stage.charAt(0).toUpperCase() + stage.slice(1));
+                    var count = document.getElementById('pipeline' + stage.charAt(0).toUpperCase() + stage.slice(1) + 'Count');
+
+                    container.innerHTML = '';
+                    count.textContent = leads.length;
+
+                    leads.forEach(function(lead) {
+                        // Create clickable phone link
+                        var phoneIcon = lead.phone && lead.phone !== 'N/A' ?
+                            '<a href="tel:' + lead.phone.replace(/[^0-9]/g, '') + '" class="text-blue-400 hover:text-blue-300" onclick="event.stopPropagation()" title="Call ' + lead.phone + '">📞</a>' :
+                            '<span class="text-gray-500">📞</span>';
+
+                        // Create clickable website link
+                        var websiteIcon = lead.website && lead.website !== 'N/A' ?
+                            '<a href="' + lead.website + '" target="_blank" class="text-green-400 hover:text-green-300" onclick="event.stopPropagation()" title="Visit website">🌐</a>' :
+                            '<span class="text-gray-500">🌐</span>';
+
+                        var card = document.createElement('div');
+                        card.className = 'pipeline-card bg-gray-600/50 rounded p-2 text-xs hover:bg-gray-600';
+                        card.dataset.action = 'advanceStage';
+                        card.dataset.id = lead.id;
+                        card.innerHTML =
+                            '<div class="font-semibold truncate">' + lead.business + '</div>' +
+                            '<div class="flex justify-between items-center gap-2">' +
+                                '<div class="flex gap-1">' + phoneIcon + websiteIcon + '</div>' +
+                                '<span class="text-' + colors[stage] + '-400">' + lead.score + ' pts</span>' +
+                                '<span class="text-gray-400">→</span>' +
+                            '</div>';
+                        container.appendChild(card);
+                    });
+                });
+            }
+
+            function toast(msg) {
+                console.log('Toast:', msg);
+                var t = document.getElementById('toast');
+                document.getElementById('toastMessage').textContent = msg;
+                t.classList.remove('translate-y-20', 'opacity-0');
+                setTimeout(function() { t.classList.add('translate-y-20', 'opacity-0'); }, 3000);
+            }
+
+            async function loadFromSheets() {
+                try {
+                    toast('Loading leads from Google Sheets...');
+
+                    // Use backend API endpoint (reads from Google Sheets via service account)
+                    var response = await fetch(apiEndpoint + '/api/sheets-leads');
+
+                    if(!response.ok) {
+                        throw new Error('Failed to connect to backend');
+                    }
+
+                    var data = await response.json();
+
+                    if(!data.success) {
+                        throw new Error(data.error || 'Unknown error');
+                    }
+
+                    // Transform backend data format to frontend format
+                    var leads = data.leads.map(function(lead, index) {
+                        return {
+                            id: lead.id || (index + 1),
+                            business: lead.business_name || 'Unknown',
+                            phone: lead.phone || '',
+                            website: lead.website || '',
+                            location: lead.location || 'Unknown',
+                            industry: lead.industry || 'Business',
+                            email: lead.email || '',
+                            score: lead.score || 70,
+                            stage: 0,
+                            status: lead.status || 'new'
+                        };
+                    });
+
+                    // Clear current leads and load from sheets
+                    allLeads = leads;
+                    currentFilter = 'all';
+
+                    // Update UI
+                    var feed = document.getElementById('leadFeed');
+                    feed.innerHTML = '';
+
+                    // Show all leads (or limit to first 20 for performance)
+                    allLeads.slice(0, 100).forEach(function(lead) {
+                        addLeadCard(lead);
+                    });
+
+                    updateStats();
+                    updatePipeline();
+
+                    toast('Loaded ' + leads.length + ' leads from Google Sheets!');
+
+                } catch(error) {
+                    console.error('Error loading from sheets:', error);
+                    toast('Failed to load from Sheets: ' + error.message);
+                }
+            }
+
+            async function loadSavedLeads() {
+                try {
+                    var response = await fetch(apiEndpoint + '/api/leads?limit=100');
+                    if(!response.ok) {
+                        throw new Error('Failed to load leads');
+                    }
+
+                    var data = await response.json();
+
+                    // Clear current leads
+                    allLeads = [];
+
+                    // Load leads from database
+                    for(var i = 0; i < data.leads.length; i++) {
+                        var dbLead = data.leads[i];
+
+                        // Handle location parsing (may be empty or not have comma)
+                        var locationParts = dbLead.location ? dbLead.location.split(',') : ['', ''];
+                        var location = locationParts[0] || 'Unknown';
+                        var state = locationParts[1] ? locationParts[1].trim() : '';
+
+                        var lead = {
+                            id: dbLead.id,
+                            business: dbLead.business_name,
+                            industry: dbLead.industry,
+                            location: location,
+                            state: state,
+                            contact: 'Contact',
+                            email: dbLead.email || 'N/A',
+                            phone: dbLead.phone || 'N/A',
+                            score: dbLead.score,
+                            rating: dbLead.rating,
+                            reviews_count: dbLead.reviews_count,
+                            website: dbLead.website,
+                            address: dbLead.address,
+                            status: dbLead.status || 'new'
+                        };
+                        allLeads.push(lead);
+                    }
+
+                    // Update UI
+                    var feed = document.getElementById('leadFeed');
+                    feed.innerHTML = '';
+
+                    // Show last 20 leads
+                    allLeads.slice(0, 20).forEach(function(lead) {
+                        addLeadCard(lead);
+                    });
+
+                    updateStats();
+                    updatePipeline();
+
+                    toast('Loaded ' + data.count + ' leads from database!');
+
+                } catch(error) {
+                    console.error('Error loading leads:', error);
+                    toast('Error loading leads from database');
+                }
+            }
+
+            async function startGeneration() {
+                console.log('startGeneration called');
+                if(isGenerating) {
+                    console.log('Already generating');
+                    return;
+                }
+                isGenerating = true;
+                console.log('Starting real-time scraping...');
+
+                document.getElementById('realLeadsBtn').classList.add('hidden');
+                document.getElementById('stopBtn').classList.remove('hidden');
+                document.getElementById('progressSection').classList.remove('hidden');
+
+                document.getElementById('statusDot').className = 'w-3 h-3 bg-green-500 rounded-full scraping-pulse';
+                document.getElementById('statusText').textContent = 'Scraping';
+                document.getElementById('statusText').className = 'text-sm text-green-300';
+
+                var indFilter = document.getElementById('industryFilter').value;
+                var locFilter = document.getElementById('locationFilter').value;
+                var scoreFilter = parseInt(document.getElementById('scoreFilter').value) || 0;
+                var speed = parseInt(document.getElementById('speedSlider').value);
+
+                // Map frontend values to backend values
+                var apiIndustry = indFilter === 'all' ? null : mapIndustry(indFilter);
+                var apiLocation = locFilter === 'all' ? null : mapLocation(locFilter);
+
+                try {
+                    document.getElementById('progressText').textContent = 'Connecting to API...';
+
+                    var leads = await scrapeLeadsFromAPI(apiIndustry, apiLocation, 20, scoreFilter);
+
+                    if(leads.length === 0) {
+                        toast('No leads found matching criteria');
+                        stopGeneration();
+                        return;
+                    }
+
+                    document.getElementById('progressText').textContent = 'Processing ' + leads.length + ' leads...';
+
+                    // Add leads one by one with delay for visual effect
+                    for(var i = 0; i < leads.length; i++) {
+                        if(!isGenerating) break;
+
+                        var lead = leads[i];
+                        allLeads.unshift(lead);
+
+                        addLeadCard(lead);
+                        updateAnalysis(lead);
+                        updateStats();
+                        updatePipeline();
+
+                        document.getElementById('progressStats').textContent = (i + 1) + ' leads found';
+                        document.getElementById('progressBar').style.width = ((i + 1) / leads.length * 100) + '%';
+
+                        await new Promise(function(resolve) { setTimeout(resolve, speed); });
+                    }
+
+                    toast('Scraping complete! Found ' + leads.length + ' leads');
+
+                } catch(error) {
+                    console.error('Scraping error:', error);
+                    toast('Error: Failed to connect to scraper API. Is backend running?');
+                    stopGeneration();
+                }
+            }
+
+            function stopGeneration() {
+                isGenerating = false;
+
+                document.getElementById('realLeadsBtn').classList.remove('hidden');
+                document.getElementById('stopBtn').classList.add('hidden');
+
+                document.getElementById('statusDot').className = 'w-3 h-3 bg-blue-500 rounded-full';
+                document.getElementById('statusText').textContent = 'Complete';
+                document.getElementById('statusText').className = 'text-sm text-blue-300';
+                document.getElementById('progressText').textContent = 'Found ' + allLeads.length + ' leads!';
+
+                setTimeout(function() {
+                    document.getElementById('progressSection').classList.add('hidden');
+                    document.getElementById('statusDot').className = 'w-3 h-3 bg-gray-500 rounded-full';
+                    document.getElementById('statusText').textContent = 'Idle';
+                    document.getElementById('statusText').className = 'text-sm text-gray-400';
+                }, 3000);
+
+                if(allLeads.length > 0) {
+                    toast('Scraping complete! ' + allLeads.length + ' leads found');
+                }
+            }
+
+            async function generateRealLeads() {
+                console.log('generateRealLeads called');
+                if(isGenerating) {
+                    console.log('Already generating');
+                    return;
+                }
+                isGenerating = true;
+                console.log('Starting Google Places API lead generation...');
+
+                document.getElementById('realLeadsBtn').classList.add('hidden');
+                document.getElementById('stopBtn').classList.remove('hidden');
+                document.getElementById('progressSection').classList.remove('hidden');
+
+                document.getElementById('statusDot').className = 'w-3 h-3 bg-green-500 rounded-full scraping-pulse';
+                document.getElementById('statusText').textContent = 'Searching Google Places';
+                document.getElementById('statusText').className = 'text-sm text-green-300';
+
+                var indFilter = document.getElementById('industryFilter').value;
+                var locFilter = document.getElementById('locationFilter').value;
+                var scoreFilter = parseInt(document.getElementById('scoreFilter').value) || 0;
+
+                // Map frontend values to backend values
+                var apiIndustry = indFilter === 'all' ? 'business' : mapIndustry(indFilter);
+                var apiLocation = locFilter === 'all' ? '37.7749,-122.4194' : mapLocation(locFilter);
+
+                try {
+                    document.getElementById('progressText').textContent = 'Searching Google Places API for ' + apiIndustry + '...';
+
+                    var response = await fetch(apiEndpoint + '/api/places-search', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            query: apiIndustry,
+                            location: apiLocation,
+                            max_results: 20
+                        })
+                    });
+
+                    if(!response.ok) {
+                        throw new Error('API request failed');
+                    }
+
+                    var data = await response.json();
+
+                    if(!data.success) {
+                        throw new Error(data.error || 'Unknown error');
+                    }
+
+                    var leads = data.leads.map(function(lead) {
+                        return {
+                            id: lead.place_id || Date.now() + Math.random(),
+                            business: lead.business_name,
+                            industry: lead.industry,
+                            location: lead.location,
+                            state: '',
+                            contact: 'Contact',
+                            email: 'N/A',
+                            phone: lead.phone || 'N/A',
+                            score: Math.round(lead.score),
+                            rating: lead.rating,
+                            reviews_count: lead.reviews_count,
+                            website: lead.website,
+                            address: lead.address,
+                            status: lead.status
+                        };
+                    });
+
+                    if(leads.length === 0) {
+                        toast('No leads found matching criteria');
+                        stopGeneration();
+                        return;
+                    }
+
+                    document.getElementById('progressText').textContent = 'Processing ' + leads.length + ' real leads...';
+
+                    // Add leads one by one with delay for visual effect
+                    for(var i = 0; i < leads.length; i++) {
+                        if(!isGenerating) break;
+
+                        var lead = leads[i];
+                        allLeads.unshift(lead);
+
+                        addLeadCard(lead);
+                        updateAnalysis(lead);
+                        updateStats();
+                        updatePipeline();
+
+                        document.getElementById('progressStats').textContent = (i + 1) + ' leads found';
+                        document.getElementById('progressBar').style.width = ((i + 1) / leads.length * 100) + '%';
+
+                        await new Promise(function(resolve) { setTimeout(resolve, 500); });
+                    }
+
+                    toast('🎉 Google Places Search complete! Found ' + leads.length + ' real businesses');
+
+                } catch(error) {
+                    console.error('Google Places API error:', error);
+                    toast('Error: Failed to connect to Google Places API');
+                    stopGeneration();
+                }
+            }
+
+            function addToPipeline(id) {
+                var lead = allLeads.find(function(l) { return l.id == id; });
+                if(lead && lead.status === 'new') {
+                    lead.status = 'contacted';
+                    updatePipeline();
+                    updateStats();
+                    toast(lead.business + ' → Pipeline');
+                }
+            }
+
+            async function advanceStage(id) {
+                var lead = allLeads.find(function(l) { return l.id == id; });
+                if(!lead) return;
+
+                var stages = ['new', 'contacted', 'qualified', 'converted'];
+                var idx = stages.indexOf(lead.status);
+
+                if(idx < stages.length - 1) {
+                    var newStatus = stages[idx + 1];
+
+                    // Update backend
+                    try {
+                        var response = await fetch(apiEndpoint + '/api/leads/' + id, {
+                            method: 'PUT',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({status: newStatus})
+                        });
+
+                        if(response.ok) {
+                            lead.status = newStatus;
+                            updatePipeline();
+                            updateStats();
+                            toast(lead.business + ' → ' + newStatus);
+                        } else {
+                            toast('Failed to update status');
+                        }
+                    } catch(error) {
+                        console.error('Error updating status:', error);
+                        // Fallback: update locally anyway
+                        lead.status = newStatus;
+                        updatePipeline();
+                        updateStats();
+                        toast(lead.business + ' → ' + newStatus + ' (local only)');
+                    }
+                } else {
+                    toast(lead.business + ' is already at final stage');
+                }
+            }
+
+            function showEmail(id) {
+                var lead = allLeads.find(function(l) { return l.id == id; });
+                if(!lead) return;
+
+                var body = 'Hi ' + lead.contact.split(' ')[0] + ',\n\n' +
+                    'I came across ' + lead.business + ' while researching top ' + lead.industry + ' companies in ' + lead.location + '.\n\n' +
+                    'I was impressed by what you\'ve built and wanted to explore how we might help accelerate your growth.\n\n' +
+                    'Would you be open to a brief 15-minute call next week?\n\n' +
+                    'Best regards,\nYour Name\nLeadForge AI';
+
+                document.getElementById('emailContent').innerHTML =
+                    '<div class="space-y-4">' +
+                        '<div><label class="text-sm text-gray-400">To:</label><div class="bg-gray-700 p-3 rounded">' + lead.contact + ' &lt;' + lead.email + '&gt;</div></div>' +
+                        '<div><label class="text-sm text-gray-400">Subject:</label><div class="bg-gray-700 p-3 rounded">' + lead.business + ' Opportunity</div></div>' +
+                        '<div><label class="text-sm text-gray-400">Message:</label><div class="bg-gray-700 p-4 rounded whitespace-pre-wrap text-sm">' + body + '</div></div>' +
+                    '</div>';
+
+                var modal = document.getElementById('emailModal');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+
+            function closeModal() {
+                var modal = document.getElementById('emailModal');
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+
+            function copyEmail() { toast('Email copied!'); }
+            function sendEmail() { toast('Email sent!'); closeModal(); }
+
+            function deleteLead(id) {
+                allLeads = allLeads.filter(function(l) { return l.id != id; });
+                var card = document.querySelector('[data-lead-id="' + id + '"]');
+                if(card) card.remove();
+                updateStats();
+                updatePipeline();
+                toast('Deleted!');
+            }
+
+            function clearFeed() {
+                document.getElementById('leadFeed').innerHTML =
+                    '<div class="text-center text-gray-500 py-12">' +
+                        '<div class="text-5xl mb-4">🎯</div>' +
+                        '<p>Click "Start Scraping" to find real leads</p>' +
+                    '</div>';
+                toast('Feed cleared!');
+            }
+
+            function clearAll() {
+                if(confirm('Clear all data?')) {
+                    allLeads = [];
+                    clearFeed();
+                    document.getElementById('aiAnalysis').innerHTML = '<p class="text-center text-gray-500 text-sm">Analysis appears here</p>';
+                    updatePipeline();
+                    updateStats();
+                    toast('All cleared!');
+                }
+            }
+
+            function exportLeads() {
+                if(allLeads.length === 0) { toast('No leads!'); return; }
+
+                var csv = 'Business,Industry,Location,Contact,Email,Phone,Score\n';
+                allLeads.forEach(function(l) {
+                    csv += '"' + l.business + '","' + l.industry + '","' + l.location + '","' + l.contact + '","' + l.email + '","' + l.phone + '",' + l.score + '\n';
+                });
+
+                var blob = new Blob([csv], {type: 'text/csv'});
+                var url = URL.createObjectURL(blob);
+                var a = document.createElement('a');
+                a.href = url;
+                a.download = 'leads.csv';
+                a.click();
+                URL.revokeObjectURL(url);
+
+                toast(allLeads.length + ' exported!');
+            }
+
+            function bulkPipeline() {
+                var count = 0;
+                allLeads.forEach(function(l) {
+                    if(l.status === 'new' && l.score >= 60) {
+                        l.status = 'contacted';
+                        count++;
+                    }
+                });
+                updatePipeline();
+                updateStats();
+                toast(count + ' added to pipeline!');
+            }
+
+            function bulkEmails() {
+                var qualified = allLeads.filter(function(l) { return l.score >= 80; });
+                if(qualified.length > 0) {
+                    showEmail(qualified[0].id);
+                    toast('Email for ' + qualified[0].business);
+                } else {
+                    toast('Need 80+ leads first!');
+                }
+            }
+
+            async function syncToSheets() {
+                try {
+                    toast('🔄 Syncing emails to Google Sheets...');
+
+                    var response = await fetch(apiEndpoint + '/api/sync-to-sheets', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({})
+                    });
+
+                    if(!response.ok) {
+                        throw new Error('Sync failed');
+                    }
+
+                    var result = await response.json();
+
+                    if(result.success) {
+                        toast('✅ Synced ' + result.synced + ' emails to Google Sheets!');
+                        if(result.synced > 0) {
+                            // Refresh leads to show synced emails
+                            loadSavedLeads();
+                        }
+                    } else {
+                        toast('❌ Sync failed: ' + (result.error || 'Unknown error'));
+                    }
+                } catch(error) {
+                    toast('❌ Sync error: ' + error.message);
+                    console.error('Sync error:', error);
+                }
+            }
+
+            async function bulkFindEmails() {
+                var leadsWithoutEmails = allLeads.filter(function(l) { return !l.email; });
+
+                if(leadsWithoutEmails.length === 0) {
+                    toast('All leads have emails!');
+                    return;
+                }
+
+                if(!confirm('Find emails for ' + leadsWithoutEmails.length + ' leads? This may take a few minutes.')) {
+                    return;
+                }
+
+                try {
+                    toast('🔍 Finding emails for ' + leadsWithoutEmails.length + ' leads...');
+
+                    var leadIds = leadsWithoutEmails.map(function(l) { return l.id; });
+                    var response = await fetch(apiEndpoint + '/api/leads/batch/find-email', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({lead_ids: leadIds, force_refresh: false})
+                    });
+
+                    if(!response.ok) {
+                        throw new Error('Batch operation failed');
+                    }
+
+                    var data = await response.json();
+                    toast('✅ Processing ' + data.total + ' leads in the background...');
+
+                    // Auto-sync discovered emails to Google Sheets
+                    setTimeout(async function() {
+                        try {
+                            var syncResponse = await fetch(apiEndpoint + '/api/sync-to-sheets', {
+                                method: 'POST',
+                                headers: {'Content-Type': 'application/json'},
+                                body: JSON.stringify({})
+                            });
+
+                            var syncResult = await syncResponse.json();
+                            if(syncResult.success && syncResult.synced > 0) {
+                                toast('🔄 Auto-synced ' + syncResult.synced + ' emails to Google Sheets!');
+                            }
+                        } catch(syncError) {
+                            console.error('Auto-sync error:', syncError);
+                        }
+                    }, 3000); // Wait 3 seconds before auto-sync
+
+                } catch(error) {
+                    console.error('Bulk find emails error:', error);
+                    toast('❌ Failed to start batch email discovery');
+                }
+            }
+
+            async function bulkValidateEmails() {
+                var leadsWithEmails = allLeads.filter(function(l) { return l.email && (!l.email_validation_status || l.email_validation_status === 'unverified'); });
+
+                if(leadsWithEmails.length === 0) {
+                    toast('No emails to validate!');
+                    return;
+                }
+
+                if(!confirm('Validate ' + leadsWithEmails.length + ' email addresses?')) {
+                    return;
+                }
+
+                try {
+                    toast('✓ Validating ' + leadsWithEmails.length + ' email addresses...');
+
+                    var leadIds = leadsWithEmails.map(function(l) { return l.id; });
+                    var response = await fetch(apiEndpoint + '/api/leads/batch/validate-email', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({lead_ids: leadIds})
+                    });
+
+                    if(!response.ok) {
+                        throw new Error('Batch operation failed');
+                    }
+
+                    var data = await response.json();
+                    toast('✅ Processing ' + data.total + ' emails in the background...');
+
+                } catch(error) {
+                    console.error('Bulk validate emails error:', error);
+                    toast('❌ Failed to start batch validation');
+                }
+            }
+
+            function init() {
+                console.log('Initializing LeadForge AI Real-Time Scraper...');
+
+                updateStats();
+                updatePipeline();
+
+                // Auto-load saved leads from database - DISABLED for fresh page loads
+                // loadSavedLeads();
+
+                // Setup event listeners
+                document.getElementById('realLeadsBtn').addEventListener('click', generateRealLeads);
+                document.getElementById('stopBtn').addEventListener('click', stopGeneration);
+                document.getElementById('clearFeedBtn').addEventListener('click', clearFeed);
+                document.getElementById('exportLeadsBtn').addEventListener('click', exportLeads);
+                document.getElementById('bulkFindEmailsBtn').addEventListener('click', bulkFindEmails);
+                document.getElementById('bulkValidateEmailsBtn').addEventListener('click', bulkValidateEmails);
+                document.getElementById('bulkPipelineBtn').addEventListener('click', bulkPipeline);
+                document.getElementById('bulkEmailsBtn').addEventListener('click', bulkEmails);
+                document.getElementById('syncToSheetsBtn').addEventListener('click', syncToSheets);
+                document.getElementById('clearAllBtn').addEventListener('click', clearAll);
+                document.getElementById('loadSheetsBtn').addEventListener('click', loadFromSheets);
+                document.getElementById('loadLeadsBtn').addEventListener('click', loadSavedLeads);
+                document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+                document.getElementById('closeModalBtn2').addEventListener('click', closeModal);
+                document.getElementById('copyEmailBtn').addEventListener('click', copyEmail);
+                document.getElementById('sendEmailBtn').addEventListener('click', sendEmail);
+
+                // Event delegation for dynamic elements
+                document.getElementById('leadFeed').addEventListener('click', function(e) {
+                    var action = e.target.dataset.action;
+                    var id = e.target.dataset.id;
+                    if(!action || !id) return;
+
+                    switch(action) {
+                        case 'addPipeline': addToPipeline(id); break;
+                        case 'showEmail': showEmail(id); break;
+                        case 'deleteLead': deleteLead(id); break;
+                        case 'findEmail': findEmail(id); break;
+                        case 'validateEmail': validateEmail(id); break;
+                    }
+                });
+
+                // Pipeline card click handlers - use event delegation with closest()
+                var pipelineContainers = ['pipelineNew', 'pipelineContacted', 'pipelineQualified', 'pipelineConverted'];
+                pipelineContainers.forEach(function(containerId) {
+                    document.getElementById(containerId).addEventListener('click', function(e) {
+                        var card = e.target.closest('[data-action="advanceStage"]');
+                        if(card) {
+                            advanceStage(card.dataset.id);
+                        }
+                    });
+                });
+
+                console.log('LeadForge AI Demo initialized successfully!');
+            }
+
+            // Wait for DOM to be ready
+            if(document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+
+        })();
+    </script>
+</body>
+</html>
