@@ -1,0 +1,23 @@
+ID,Business Name,Industry,Location,Phone,Website,Rating,Reviews,Address,Email,Score,Status,Created At
+726,Piedmont Café,Food & Beverage,Seattle,(206) 659-9899,https://piedmontseattle.com/,4.9,220,"1215 Seneca St Suite 100, Seattle, WA 98101, USA",events@piedmontseattle.com,100,new,2026-03-15 19:15:03
+731,Storyville Coffee,Food & Beverage,Seattle,(206) 780-5777,https://storyville.com/pages/downtown-seattle?srsltid=AfmBOooPYtJCq_RJxF7LTu1cnr-tEFmZkKvTKv-bZ7m0NBVuzWfla2LE,4.6,803,"1001 1st Ave, Seattle, WA 98104, USA",awannamaker@storyville.com,100,new,2026-03-15 19:15:03
+735,Zeitgeist Coffee,Food & Beverage,Seattle,(206) 583-0497,http://zeitgeistcoffee.com/,4.5,1553,"171 S Jackson St, Seattle, WA 98104, USA",bryan@zeitgeistcoffee.com,100,new,2026-03-15 19:15:03
+736,Anchorhead Coffee,Food & Beverage,Seattle,(206) 222-2295,http://www.anchorheadcoffee.com/,4.7,505,"2003 Western Ave STE 110A, Seattle, WA 98121, USA",isaiah@anchorheadcoffee.com,100,new,2026-03-15 19:15:03
+738,Hello Em Việt Coffee & Roastery,Restaurant,Seattle,(206) 323-4387,https://www.helloem.coffee/,4.7,710,"1227 S Weller St, Seattle, WA 98144, USA",hi@helloem.coffee,100,new,2026-03-15 19:15:03
+739,Overcast Coffee,Food & Beverage,Seattle,(206) 588-2621,http://www.overcastcoffee.co/,4.7,282,"1517 12th Ave Suite 100, Seattle, WA 98122, USA",info@overcastcoffee.co,100,new,2026-03-15 19:15:03
+740,CU URBAN MARKET & CAFE,Food & Beverage,Seattle,(206) 596-5301,http://cumnc.com/,4.8,158,"1117 1st Ave, Seattle, WA 98101, USA",contact@cumnc.com,100,new,2026-03-15 19:15:03
+905,Heart of the City Farmers' Market,Agriculture,San Francisco,(415) 558-9455,http://hotcfarmersmarket.org/,4.6,813,"147 Fulton St, San Francisco, CA 94102, USA",steve@hotcfarmersmarket.org,100,new,2026-03-17 17:59:42
+907,Alemany Farmer's Market,Agriculture,San Francisco,(415) 647-9423,http://sfgov.org/realestate/alemany-farmers-market,4.5,1340,"100 Alemany Blvd, San Francisco, CA 94110, USA",claire.reardon@sfgov.org,100,new,2026-03-17 17:59:42
+571,Summit Health,medical clinic,"Chicago, IL",(312) 442-6162,www.summithealth.com,4.8,315,"9002 Second Dr, Chicago, IL",smaurer@summithealth.com,99,new,2026-03-15 17:04:58
+572,Atlas Health,medical clinic,"Chicago, IL",(312) 286-9989,www.atlashealth.com,3.5,247,"3041 Oak St, Chicago, IL",info@atlashealth.com,99,new,2026-03-15 17:04:58
+573,Master Health,medical clinic,"Chicago, IL",(312) 944-5669,www.masterhealth.com,4.5,389,"9231 First Ave, Chicago, IL",info@masterhealth.com,99,new,2026-03-15 17:04:58
+576,Metro Wellness,medical clinic,"Chicago, IL",(312) 993-2189,,4.0,478,"7004 Oak Dr, Chicago, IL",info@metrowellness.com,99,new,2026-03-15 17:04:58
+578,Summit Clinic,medical clinic,"Chicago, IL",(312) 988-3594,www.summitclinic.com,3.5,473,"6764 Second St, Chicago, IL",info@summitclinic.com,99,new,2026-03-15 17:04:58
+579,Global Health,medical clinic,"Chicago, IL",(312) 218-7092,www.globalhealth.com,3.6,289,"2775 Washington Dr, Chicago, IL",sagar.patel@globalhealth.com,99,new,2026-03-15 17:04:58
+580,Summit Center,medical clinic,"Chicago, IL",(312) 539-8432,www.summitcenter.com,4.8,293,"9609 Broadway St, Chicago, IL",info@summitcenter.com,99,new,2026-03-15 17:04:58
+582,Apex Wellness,medical clinic,"Chicago, IL",(312) 608-5754,www.apexwellness.com,4.3,287,"6817 Main St, Chicago, IL",info@apexwellness.com,99,new,2026-03-15 17:04:58
+585,Pro Clinic,medical clinic,"Chicago, IL",(312) 987-5603,www.proclinic.com,4.3,459,"1880 Market Dr, Chicago, IL",info@proclinic.com,99,new,2026-03-15 17:04:58
+586,Master Health,medical clinic,"Chicago, IL",(312) 633-5232,,4.1,468,"4706 Second St, Chicago, IL",info@masterhealth.com,99,new,2026-03-15 17:04:58
+587,Summit Center,medical clinic,"Chicago, IL",(312) 300-9950,,4.9,158,"4182 First Ave, Chicago, IL",info@summitcenter.com,99,new,2026-03-15 17:04:58
+590,Master Wellness,medical clinic,"Chicago, IL",(312) 904-6984,,4.9,149,"413 Market Way, Chicago, IL",info@masterwellness.com,99,new,2026-03-15 17:04:58
+3,"Magnon Electric, Inc",STRICT_BUSINESS,,(337) 233-9871,Open Website,,0,,blake@magnonelectric.com,70,new,2026-03-15 16:39:33

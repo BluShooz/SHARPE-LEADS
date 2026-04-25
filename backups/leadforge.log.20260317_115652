@@ -1,0 +1,64 @@
+2026-03-17 10:51:22 - root - INFO - [logging_config.py:71] - ============================================================
+2026-03-17 10:51:22 - root - INFO - [logging_config.py:72] - LeadForge AI Logging Initialized
+2026-03-17 10:51:22 - root - INFO - [logging_config.py:73] - Log level: INFO
+2026-03-17 10:51:22 - root - INFO - [logging_config.py:74] - Log file: leadforge.log
+2026-03-17 10:51:22 - root - INFO - [logging_config.py:75] - ============================================================
+2026-03-17 10:53:45 - root - INFO - [logging_config.py:71] - ============================================================
+2026-03-17 10:53:45 - root - INFO - [logging_config.py:72] - LeadForge AI Logging Initialized
+2026-03-17 10:53:45 - root - INFO - [logging_config.py:73] - Log level: INFO
+2026-03-17 10:53:45 - root - INFO - [logging_config.py:74] - Log file: leadforge.log
+2026-03-17 10:53:45 - root - INFO - [logging_config.py:75] - ============================================================
+2026-03-17 10:53:45 - __main__ - INFO - [main.py:720] - LeadForge AI server starting
+2026-03-17 10:54:43 - health_monitoring - INFO - [health_monitoring.py:304] - Running health checks...
+2026-03-17 10:54:45 - health_monitoring - ERROR - [health_monitoring.py:321] - ALERT: disk_space is unhealthy - Disk usage: 99.3%
+2026-03-17 10:54:45 - health_monitoring - INFO - [health_monitoring.py:323] - Health checks complete: 4/5 healthy
+2026-03-17 10:54:45 - __main__ - INFO - [main.py:684] - "GET /api/health HTTP/1.1" 200 -
+2026-03-17 10:56:21 - health_monitoring - INFO - [health_monitoring.py:304] - Running health checks...
+2026-03-17 10:56:23 - health_monitoring - ERROR - [health_monitoring.py:321] - ALERT: disk_space is unhealthy - Disk usage: 99.3%
+2026-03-17 10:56:23 - health_monitoring - INFO - [health_monitoring.py:323] - Health checks complete: 4/5 healthy
+2026-03-17 10:56:23 - __main__ - INFO - [main.py:684] - "GET /api/health HTTP/1.1" 200 -
+2026-03-17 10:56:46 - __main__ - INFO - [main.py:684] - "GET /api/test HTTP/1.1" 200 -
+2026-03-17 10:57:30 - __main__ - INFO - [main.py:684] - "OPTIONS /api/places-search HTTP/1.1" 200 -
+2026-03-17 10:57:32 - data_validation - INFO - [data_validation.py:292] - Validated 20 leads: 19 valid, 1 invalid
+2026-03-17 10:57:32 - __main__ - WARNING - [main.py:513] - 1 leads failed validation
+2026-03-17 10:57:32 - __main__ - INFO - [main.py:524] - Syncing 19 leads to Google Sheets...
+2026-03-17 10:57:41 - __main__ - INFO - [main.py:529] - Successfully synced 0 leads to Google Sheets
+2026-03-17 10:57:41 - __main__ - INFO - [main.py:684] - "POST /api/places-search HTTP/1.1" 200 -
+2026-03-17 10:58:34 - __main__ - INFO - [main.py:684] - "GET /api/sheets-leads HTTP/1.1" 200 -
+2026-03-17 10:58:39 - __main__ - INFO - [main.py:684] - "GET /api/leads?limit=100 HTTP/1.1" 200 -
+2026-03-17 10:58:49 - __main__ - INFO - [main.py:684] - "GET /api/sheets-leads HTTP/1.1" 200 -
+2026-03-17 11:01:08 - health_monitoring - INFO - [health_monitoring.py:304] - Running health checks...
+2026-03-17 11:01:11 - health_monitoring - ERROR - [health_monitoring.py:321] - ALERT: disk_space is unhealthy - Disk usage: 99.3%
+2026-03-17 11:01:11 - health_monitoring - INFO - [health_monitoring.py:323] - Health checks complete: 4/5 healthy
+2026-03-17 11:01:11 - __main__ - INFO - [main.py:684] - "GET /api/health HTTP/1.1" 200 -
+2026-03-17 11:01:28 - __main__ - INFO - [main.py:684] - "GET /api/test HTTP/1.1" 200 -
+2026-03-17 11:02:20 - __main__ - INFO - [main.py:684] - "GET /api/sheets-leads HTTP/1.1" 200 -
+2026-03-17 11:20:49 - root - INFO - [logging_config.py:71] - ============================================================
+2026-03-17 11:20:49 - root - INFO - [logging_config.py:72] - LeadForge AI Logging Initialized
+2026-03-17 11:20:49 - root - INFO - [logging_config.py:73] - Log level: INFO
+2026-03-17 11:20:49 - root - INFO - [logging_config.py:74] - Log file: leadforge.log
+2026-03-17 11:20:49 - root - INFO - [logging_config.py:75] - ============================================================
+2026-03-17 11:20:49 - __main__ - INFO - [main.py:827] - LeadForge AI server starting
+2026-03-17 11:21:23 - __main__ - INFO - [main.py:777] - "GET /api/backup-stats HTTP/1.1" 200 -
+2026-03-17 11:22:12 - __main__ - INFO - [main.py:777] - "GET /api/rate-limit-stats HTTP/1.1" 200 -
+2026-03-17 11:22:46 - automated_backups - INFO - [automated_backups.py:259] - Starting full backup...
+2026-03-17 11:22:46 - automated_backups - INFO - [automated_backups.py:92] - Database backed up: backups/leads_db_20260317_112246.sql.gz (28.2 KB)
+2026-03-17 11:22:47 - automated_backups - INFO - [automated_backups.py:174] - Google Sheets exported: backups/sheets_export_20260317_112246.csv (45.6 KB)
+2026-03-17 11:22:47 - automated_backups - INFO - [automated_backups.py:130] - Backed up 1 log files
+2026-03-17 11:22:47 - automated_backups - INFO - [automated_backups.py:205] - Cleanup complete: removed 0 old backups
+2026-03-17 11:22:47 - automated_backups - INFO - [automated_backups.py:285] - Full backup completed successfully
+2026-03-17 11:22:47 - __main__ - INFO - [main.py:777] - "GET /api/backup HTTP/1.1" 200 -
+2026-03-17 11:22:47 - __main__ - INFO - [main.py:472] - Backup completed: {'timestamp': '2026-03-17T11:22:46.564263', 'database': 'backups/leads_db_20260317_112246.sql.gz', 'sheets': 'backups/sheets_export_20260317_112246.csv', 'logs': 1, 'cleanup': 0, 'success': True}
+2026-03-17 11:22:57 - health_monitoring - INFO - [health_monitoring.py:304] - Running health checks...
+2026-03-17 11:22:59 - health_monitoring - ERROR - [health_monitoring.py:321] - ALERT: disk_space is unhealthy - Disk usage: 99.0%
+2026-03-17 11:22:59 - health_monitoring - INFO - [health_monitoring.py:323] - Health checks complete: 4/5 healthy
+2026-03-17 11:22:59 - __main__ - INFO - [main.py:777] - "GET /api/health HTTP/1.1" 200 -
+2026-03-17 11:26:52 - __main__ - INFO - [main.py:777] - "GET /api/sheets-leads HTTP/1.1" 200 -
+2026-03-17 11:26:59 - __main__ - INFO - [main.py:777] - "GET /api/leads?limit=100 HTTP/1.1" 200 -
+2026-03-17 11:27:03 - __main__ - INFO - [main.py:777] - "GET /api/sheets-leads HTTP/1.1" 200 -
+2026-03-17 11:27:19 - __main__ - INFO - [main.py:777] - "OPTIONS /api/leads/100 HTTP/1.1" 200 -
+2026-03-17 11:27:43 - __main__ - INFO - [main.py:777] - "GET /api/sheets-leads HTTP/1.1" 200 -
+2026-03-17 11:27:46 - __main__ - INFO - [main.py:777] - "GET /api/leads?limit=100 HTTP/1.1" 200 -
+2026-03-17 11:56:52 - automated_backups - INFO - [automated_backups.py:259] - Starting full backup...
+2026-03-17 11:56:52 - automated_backups - INFO - [automated_backups.py:92] - Database backed up: backups/leads_db_20260317_115652.sql.gz (28.2 KB)
+2026-03-17 11:56:52 - automated_backups - INFO - [automated_backups.py:174] - Google Sheets exported: backups/sheets_export_20260317_115652.csv (45.6 KB)
