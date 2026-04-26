@@ -14,7 +14,7 @@ import dotenv
 # Load environment variables
 dotenv.load_dotenv()
 
-API_KEY = os.getenv("GOOGLE_PLACES_API_KEY", "AIzaSyCTrX9ySn-2nAZLq3SkadPAD0Cmp202oXk")  # Google Places API Key
+API_KEY = os.getenv("GOOGLE_PLACES_API_KEY")  # Google Places API Key
 BASE_URL = "https://maps.googleapis.com/maps/api/place"
 
 class PlacesLeadGenerator:
