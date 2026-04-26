@@ -52,6 +52,9 @@ class handler(BaseHTTPRequestHandler):
     def do_GET(self):
         """Handle GET requests"""
         path = self.path.rstrip('/')
+        # Remove query parameters from path for routing
+        if '?' in path:
+            path = path.split('?')[0]
         parts = path.split('/')
 
         # Root path - API info
@@ -331,6 +334,9 @@ class handler(BaseHTTPRequestHandler):
     def do_POST(self):
         """Handle POST requests"""
         path = self.path.rstrip('/')
+        # Remove query parameters from path for routing
+        if '?' in path:
+            path = path.split('?')[0]
         parts = path.split('/')
 
         # Scrape endpoint - main lead generation
@@ -519,6 +525,9 @@ class handler(BaseHTTPRequestHandler):
     def do_DELETE(self):
         """Handle DELETE requests"""
         path = self.path.rstrip('/')
+        # Remove query parameters from path for routing
+        if '?' in path:
+            path = path.split('?')[0]
         parts = path.split('/')
 
         # Delete specific lead
