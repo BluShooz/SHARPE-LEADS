@@ -8,8 +8,13 @@ import json
 import sqlite3
 from typing import List, Dict, Optional
 import time
+import os
+import dotenv
 
-API_KEY = "AIzaSyCTrX9ySn-2nAZLq3SkadPAD0Cmp202oXk"  # Google Places API Key
+# Load environment variables
+dotenv.load_dotenv()
+
+API_KEY = os.getenv("GOOGLE_PLACES_API_KEY", "AIzaSyCTrX9ySn-2nAZLq3SkadPAD0Cmp202oXk")  # Google Places API Key
 BASE_URL = "https://maps.googleapis.com/maps/api/place"
 
 class PlacesLeadGenerator:

@@ -6,11 +6,16 @@ Reads from and writes to Google Sheets using Service Account
 import gspread
 from google.oauth2.service_account import Credentials
 from datetime import datetime
+import os
+import json
 
 # Google Sheets Configuration
-SHEET_ID = "1F-joQOczNCb2JGVgKx0w3GompkJtzzcLEd6QTVn0qgo"
-WORKSHEET_NAME = "Imported Leads Clean"  # Updated: Use clean worksheet with NO duplicates
-SERVICE_ACCOUNT_FILE = '/Users/jonsmith/leadforge-scraper/service_account.json'  # Full path
+SHEET_ID = os.getenv("SHEET_ID", "1F-joQOczNCb2JGVgKx0w3GompkJtzzcLEd6QTVn0qgo")
+WORKSHEET_NAME = os.getenv("WORKSHEET_NAME", "Imported Leads Clean")
+SERVICE_ACCOUNT_FILE = os.getenv("SERVICE_ACCOUNT_FILE", "service_account.json")
+
+# For Vercel deployment, use environment variable with JSON content
+SERVICE_ACCOUNT_JSON = os.getenv("SERVICE_ACCOUNT_JSON")
 
 # Column mappings (Google Sheet column -> LeadForge field)
 COLUMN_MAPPING = {
@@ -44,7 +49,14 @@ class GoogleSheetsClient:
             scope = ['https://www.googleapis.com/auth/spreadsheets']
 
             # Load service account credentials
-            creds = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=scope)
+            # Try environment variable first (for Vercel), then file (for local)
+            if SERVICE_ACCOUNT_JSON:
+                # Parse JSON from environment variable
+                service_account_info = json.loads(SERVICE_ACCOUNT_JSON)
+                creds = Credentials.from_service_account_info(service_account_info, scopes=scope)
+            else:
+                # Load from file for local development
+                creds = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=scope)
 
             # Authorize the client
             self.client = gspread.authorize(creds)
